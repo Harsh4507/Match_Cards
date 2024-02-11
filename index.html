@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Cards</title>
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+    <style>
+        *{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.main{
+    display: grid;
+    grid-template-columns: 80px 80px 80px 80px;
+    grid-template-rows: 80px 80px 80px 80px;
+    justify-content: center;
+    /* margin-top: 10%; */
+}
+.box{
+    border: 1px solid red;
+    text-align: center;
+    padding-top: 15px;
+    font-size: 30px;
+}
+.score{
+    text-align: center;
+    /* border: 1px solid red; */
+}
+.head{
+    /* border: 1px solid red; */
+    text-align: center;
+    margin-top: 7%;
+}
+.gamestatus{
+    /* border: 1px solid red; */
+    text-align: center;
+}
+.reset,.newgame,.showcards{
+    /* border: 1px solid red; */
+    /* margin: auto; */
+    display: none;
+    padding: 10px;
+    margin: 10px;
+    border: 2px solid black;
+    border-radius: 20px;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+.reset:hover,.newgame:hover,.showcards:hover{
+    background-color: black;
+    color: white;
+}
+.btns{
+    display: flex;
+    justify-content: center;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="head">Pick one card</h2>
+        <div class="main">
+            <div class="box" id="1"><h1></h1></div>
+            <div class="box" id="2"><h1></h1></div>
+            <div class="box" id="3"><h1></h1></div>
+            <div class="box" id="4"><h1></h1></div>
+            <div class="box" id="5"><h1></h1></div>
+            <div class="box" id="6"><h1></h1></div>
+            <div class="box" id="7"><h1></h1></div>
+            <div class="box" id="8"><h1></h1></div>
+            <div class="box" id="9"><h1></h1></div>
+            <div class="box" id="10"><h1></h1></div>
+            <div class="box" id="11"><h1></h1></div>
+            <div class="box" id="12"><h1></h1></div>
+            <div class="box" id="13"><h1></h1></div>
+            <div class="box" id="14"><h1></h1></div>
+            <div class="box" id="15"><h1></h1></div>
+            <div class="box" id="16"><h1></h1></div>
+        </div>
+        <div>
+            <h2 class="score">SCORE : 0 </h2>
+            <div class="btns">
+                <button class="reset" onclick="reset()">Reset</button>
+            <button class="newgame" onclick="newgamefn()">New Game</button>
+            <button class="showcards" onclick="showcardsfn()">Show Cards</button>
+            </div>
+            <h2 class="gamestatus"></h2>
+        </div>
+    </div>
+    <!-- <script src="js/script2.js"></script> -->
+    <script>
+        let box = document.getElementsByClassName("box");
+let total = document.querySelector(".score");
+let head = document.querySelector("head");
+let gamestatus = document.querySelector(".gamestatus");
+let main = document.querySelector(".main");
+let resetbtn = document.querySelector(".reset");
+let newgame = document.querySelector(".newgame");
+let showcards = document.querySelector(".showcards");
+let c = ["A", "B", "C", "D", "E", "F", "G", "H"];
+let a = c.concat(c);
+for (let i = 0; i < a.length; i++) {
+  let index = Math.floor(Math.random() * a.length);
+  let temp = a[i];
+  a[i] = a[index];
+  a[index] = temp;
+}
+console.log(a);
+let b=[];
+for(let i=0;i<a.length;i++){
+  let obj={
+    value:a[i],
+    state:true
+  };
+  b.push(obj);
+}
+let array = [];
+let array1 = [];
+let score = 0;
+let runevent = false;
+for (let i = 0; i < box.length; i++) {
+  box[i].addEventListener("click", () => {
+    if (runevent == true) {
+      console.log(`box${i + 1} clicked and it's value is ${b[i].value}`);
+      box[i].innerHTML = ``;
+      box[i].innerHTML += `${b[i].value}`;
+      console.log(b[i].value);
+      if (array.length % 2 == 0 && b[i].state == true) {
+        total.innerHTML = `SCORE : ${score}`;
+        array.push(b[i].value);
+        console.log(array);
+        b[i].state = false;
+        console.log(b[i].state);
+      } else if (
+        array.length % 2 != 0 &&
+        array[array.length - 1] == b[i].value &&
+        b[i].state == true
+      ) {
+        score += 2;
+        total.innerHTML = `SCORE : ${score}`;
+        array.push(b[i].value);
+        console.log(array);
+        b[i].state = false;
+        console.log(b[i].state);
+      } else if (b[i].state == false) {
+        console.log(`${b[i].value} is repeated`);
+      } else if (
+        array.length % 2 != 0 &&
+        array[array.length - 1] != b[i].value
+      ) {
+        console.log(array);
+        runevent = false;
+        setTimeout(() => {
+          box[i].innerHTML = "";
+          b[i].state = true;
+          console.log(b[i].state);
+          for (let j = 0; j < b.length; j++) {
+            if (b[j].value == array[array.length - 1]) {
+              box[j].innerHTML = "";
+              b[j].state = true;
+              console.log(b[j].state);
+            }
+          }
+          array.pop();
+          runevent = true;
+        }, 1000);
+      }
+      if (array.length == b.length) {
+        gamestatus.innerHTML = "";
+        gamestatus.innerHTML = `Game Over ${b.length} points scored`;
+        setTimeout(() => {
+          for (let k = 0; k < box.length; k++) {
+            box[k].innerHTML = "";
+          }
+          gamestatus.innerHTML = "";
+          newgamefn();
+        }, 2000);
+      }
+    } else {
+      event.preventDefault();
+    }
+  });
+}
+function reset() {
+  for (let i = 0; i < box.length; i++) {
+    box[i].innerHTML = "";
+    b[i].state = true;
+  }
+  array = [];
+  score = 0;
+  total.innerHTML = `SCORE : ${score}`;
+}
+window.onload = function () {
+  startgame();
+};
+function newgamefn() {
+  location.reload();
+}
+function showcardsfn() {
+  for (let i = 0; i < box.length; i++) {
+    box[i].innerHTML = "";
+    box[i].innerHTML = `${b[i].value}`;
+  }
+  runevent = false;
+  setTimeout(() => {
+    for (let i = 0; i < box.length; i++) {
+      if (b[i].state == false) {
+        box[i].innerHTML = "";
+        box[i].innerHTML = `${b[i].value}`;
+      } else {
+        box[i].innerHTML = "";
+      }
+    }
+    runevent = true;
+  }, 2000);
+}
+function startgame() {
+  for (let i = 0; i < box.length; i++) {
+    box[i].innerHTML = "";
+    box[i].innerHTML = `${b[i].value}`;
+    setTimeout(() => {
+      box[i].innerHTML = "";
+      runevent = true;
+      resetbtn.style.display = "block";
+      newgame.style.display = "block";
+      showcards.style.display = "block";
+    }, 4000);
+  }
+}
+
+    </script>
+</body>
+</html>
